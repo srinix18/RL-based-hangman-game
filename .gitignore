@@ -38,3 +38,8 @@ env/
 !test.txt
 !requirements.txt
 !README.md
+
+# Model files
+*.pth
+*.pt
+*.pkl

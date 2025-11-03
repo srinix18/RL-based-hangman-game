@@ -16,13 +16,13 @@ def train_hmm(corpus_file):
     return hmm
 
 
-def train_rl_agent(hmm, train_words, num_episodes=5000):
-    """Train RL agent on Hangman environment."""
-    print(f"\nTraining RL agent for {num_episodes} episodes...")
+def train_rl_agent(hmm, train_words, num_episodes=2000, use_gpu=True):
+    """Train RL agent on Hangman environment (reduced episodes for speed)."""
+    print(f"\nTraining RL agent for {num_episodes} episodes (optimized for hackathon speed)...")
     env = HangmanEnv(train_words)
-    agent = QLearningAgent(hmm)
-    episode_rewards = agent.train(env, num_episodes=num_episodes, verbose=True)
-    return agent, episode_rewards
+    agent = QLearningAgent(hmm, use_gpu=use_gpu)
+    episode_rewards, episode_metrics = agent.train(env, num_episodes=num_episodes, verbose=True, log_interval=200)
+    return agent, episode_rewards, episode_metrics
 
 
 def evaluate_agent(agent, test_words):
@@ -158,16 +158,23 @@ def main():
     # Step 2: Load training words for RL
     train_words = load_words(corpus_file)
     
-    # Step 3: Train RL Agent
+    # Step 3: Train RL Agent (reduced to 2000 episodes for speed)
     print("\n[STEP 2] Training Reinforcement Learning Agent...")
-    agent, episode_rewards = train_rl_agent(hmm, train_words, num_episodes=5000)
+    agent, episode_rewards, episode_metrics = train_rl_agent(hmm, train_words, num_episodes=2000)
+    
+    # Save detailed metrics
+    print("\n[STEP 3] Saving training metrics...")
+    import json
+    with open('training_metrics.json', 'w') as f:
+        json.dump(episode_metrics, f, indent=2)
+    print("Training metrics saved to training_metrics.json")
     
     # Step 4: Plot learning curve
-    print("\n[STEP 3] Generating learning curve...")
+    print("\n[STEP 4] Generating learning curve...")
     plot_learning_curve(episode_rewards)
     
     # Step 5: Evaluate on test set
-    print("\n[STEP 4] Evaluating on test set...")
+    print("\n[STEP 5] Evaluating on test set...")
     test_words = load_words(test_file)
     metrics = evaluate_agent(agent, test_words)
     
@@ -187,7 +194,7 @@ def main():
     print("=" * 60)
     
     # Step 7: Save report
-    print("\n[STEP 5] Saving analysis report...")
+    print("\n[STEP 6] Saving analysis report...")
     save_report(metrics)
     
     print("\n✓ All tasks completed successfully!")

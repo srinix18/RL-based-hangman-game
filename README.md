@@ -1,6 +1,6 @@
 # RL-based Hangman Game
 
-An end-to-end intelligent Hangman agent using **Machine Learning** that combines Hidden Markov Models (HMM) and Reinforcement Learning (Q-Learning) for optimal letter prediction.
+An end-to-end intelligent Hangman agent using **Machine Learning** that combines Hidden Markov Models (HMM) and Q-Learning (Reinforcement Learning) for optimal letter prediction.
 
 ## 🎯 Overview
 
@@ -9,6 +9,7 @@ This project implements a sophisticated Hangman AI that learns to play the game 
 - Using **Hidden Markov Models** for probabilistic letter prediction based on word patterns
 - Employing **Q-Learning** (Reinforcement Learning) for decision-making and strategy optimization
 - Training on 50,000 words and evaluating on 2,000 test words
+- Real-time progress tracking with win rates during training
 
 ## 🧩 System Architecture
 
@@ -27,13 +28,17 @@ This project implements a sophisticated Hangman AI that learns to play the game 
 ### 3. Q-Learning Agent
 
 - Tabular Q-learning with ε-greedy exploration
+- Dictionary-based Q-table for state-action values
 - Integrates HMM probabilities for smarter action selection
-- Reward structure:
-  - +10 for correct guess
-  - -5 for wrong guess
-  - -2 for repeated guess
-  - +100 for winning
-  - -50 for losing
+- Real-time progress bar with win rate tracking
+
+**Reward Structure:**
+
+- +10 for correct guess
+- -5 for wrong guess
+- -2 for repeated guess
+- +100 for winning
+- -50 for losing
 
 ## 📦 Project Structure
 
@@ -53,7 +58,19 @@ ml hackathon/
 ### Prerequisites
 
 ```bash
-pip install numpy matplotlib
+pip install -r requirements.txt
+```
+
+Or install manually:
+
+```bash
+pip install numpy matplotlib tqdm
+```
+
+Or install all dependencies:
+
+```bash
+pip install -r requirements.txt
 ```
 
 ### Run the Complete Pipeline
@@ -65,7 +82,7 @@ python main.py
 This will:
 
 1. Train HMM on `corpus.txt`
-2. Train RL agent for 5,000 episodes
+2. Train Q-Learning agent for 5,000 episodes with progress bar
 3. Evaluate on `test.txt`
 4. Generate `learning_curve.png` and `analysis_report.txt`
 
@@ -83,6 +100,7 @@ The system computes:
 ✅ HMM-based letter probability prediction  
 ✅ Q-Learning with epsilon-greedy exploration  
 ✅ Smart integration of HMM probabilities into RL decisions  
+✅ Real-time progress bar with win rate tracking  
 ✅ Comprehensive evaluation and visualization  
 ✅ Modular, extensible architecture
 
