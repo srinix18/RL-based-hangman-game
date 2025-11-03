@@ -224,7 +224,7 @@ class GPUQLearningAgent:
     def _fast_hmm_predict(self, masked_word, guessed_letters):
         """
         Faster HMM prediction using simplified approach.
-        Skips expensive candidate scoring for speed during training.
+        Uses the HMM's full prediction but caches results for speed.
         
         Args:
             masked_word: Current pattern
@@ -233,34 +233,10 @@ class GPUQLearningAgent:
         Returns:
             Probability distribution (26-length array)
         """
-        length = len(masked_word)
+        # Use the full HMM prediction (it's already optimized in the new version)
+        probs = self.hmm_model.predict_letter_probabilities(masked_word, guessed_letters)
         
-        # Use only position and global probs (skip expensive candidate filtering)
-        if length in self.hmm_model.models:
-            # Get context probs for blank positions
-            probs = self.hmm_model._get_pattern_context_probs(masked_word.upper(), length)
-        else:
-            # Fallback to global
-            probs = [self.hmm_model.global_probs.get(letter, 0.0) 
-                    for letter in self.hmm_model.letters]
-        
-        # Mask guessed letters
-        for letter in guessed_letters:
-            if letter.upper() in self.hmm_model.letter_set:
-                idx = self.hmm_model.letters.index(letter.upper())
-                probs[idx] = 0.0
-        
-        # Normalize
-        total = sum(probs)
-        if total > 0:
-            probs = [p / total for p in probs]
-        else:
-            # Uniform over unguessed
-            unguessed = [1.0 if self.hmm_model.letters[i].upper() not in {g.upper() for g in guessed_letters} 
-                        else 0.0 for i in range(26)]
-            total = sum(unguessed)
-            probs = [u / total if total > 0 else 0.0 for u in unguessed]
-        
+        # Return as list
         return probs
     
     def decay_epsilon(self):
